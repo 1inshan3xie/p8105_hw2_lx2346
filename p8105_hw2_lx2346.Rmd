@@ -1,0 +1,57 @@
+---
+title: "p8105_hw2_lx2346"
+author: "linshan"
+date: "2024-09-25"
+output: github_document
+---
+
+# Problem 1
+Prepare for the packages that may be used
+```{r}
+library(tidyverse)
+```
+## import and clean the NYC Transit data
+```{r}
+nyc_tran = read_csv("./data of hw2/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",na = "") |>
+  janitor::clean_names() |>
+  mutate(across(starts_with("route"), as.character)) |>
+  pivot_longer(
+    route1:route11,
+    names_to = NULL, 
+    values_to = "routes_served") |>
+  filter(routes_served != "") |>
+  select(line, station_name, station_latitude,station_longitude, routes_served, entry, vending, entrance_type,ada) |>
+  mutate( entry = case_match( entry , "YES"  ~ TRUE, "NO" ~ FALSE)) |>
+  mutate( vending = case_match(vending , "YES"  ~ TRUE, "NO" ~ FALSE))
+```
+## Describe what cleaning work I've done above.
+1. Clean the names of the dataset\
+2. Combine the routes from route1 to route11 into 1 variable with column name routes_served\
+3. Remove blank variable at routes_served\
+4. Select the route, station name, station latitude, station longitude, service route, entrance, vending machine, entrance_type, motor variable required by the problem\
+5. Convert the entry and vending variable from character (YES vs NO) to a logical variable\
+
+## Describe the NYC Transit Data
+**The NYC transit data set has `r nrow(nyc_tran)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(nyc_tran)`✖️`r ncol(nyc_tran)` table.**\
+**The variables in the dataset are `r names(nyc_tran)`.**\
+To sum up, the dataset lists each of the entry/exit in each subway station. It lists whether or not it is a entry, whether or not it has a vending,  whether or not it has a ADA compliance and the entrance type of each entry/exit. It also lists the information about the station, like which line and route it belongs to and the station's locaton(longitude and latitude).
+
+## Answer the following questions using these data:
+**1. How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox)**\
+\
+There are `r nrow(distinct(nyc_tran,station_name))` distinct stations.
+
+**2. How many stations are ADA compliant?**\
+```{r}
+ada_true = filter(nyc_tran, ada == TRUE)
+nrow(distinct(ada_true, station_name))
+```
+So there are `r nrow(distinct(ada_true, station_name))` distinct stations which are ADA compliant.\
+
+**3. What proportion of station entrances / exits without vending allow entrance?**\
+\
+`r nrow(filter(nyc_tran, vending == FALSE))/nrow(nyc_tran)`
+
+
+
+
