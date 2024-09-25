@@ -70,6 +70,49 @@ serve_a_ada = filter(serve_a, ada == TRUE)
 
 So there are `r nrow(distinct(serve_a, station_name))` diatinct stations serves A. And among those stations serves A, there are `r nrow(distinct(serve_a_ada, station_name))` stations are ADA compliant.
 
+# Problem 2
+## import and clean mr_trash data
+```{r}
+library(readxl)
+mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", range = "A2:N586") |>
+  janitor::clean_names() |>
+  mutate(sports_balls = round(sports_balls)) |>
+  mutate(sports_balls = as.integer(sports_balls)) |>
+  pivot_longer(
+    plastic_bottles: sports_balls,
+    names_to = "type_of _trash",
+    values_to = "numbers"
+  ) |>
+  mutate(type = "Mr.")
+```
 
+## use the same way import Professor Trash Wheel and Gwynnda data
+```{r}
+# import professor trash wheel
+prof_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    plastic_bottles: wrappers,
+    names_to = "type_of _trash",
+    values_to = "numbers"
+  ) |>
+  mutate(type = "Professor") |>
+  mutate(year = as.character(year))
+# import Gwynnda Trash Wheel
+gwy_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |>
+  janitor::clean_names() |>
+  pivot_longer(
+    plastic_bottles: wrappers,
+    names_to = "type_of _trash",
+    values_to = "numbers"
+  ) |>
+  mutate(type = "Gwynnda") |>
+  mutate(year = as.character(year))
+```
+
+## combine the 3 dataset
+```{r}
+trash = bind_rows( prof_trash, gwy_trash, mr_trash)
+```
 
 
