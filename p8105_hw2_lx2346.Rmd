@@ -125,3 +125,39 @@ The total weight of trash Professor Trash Wheel collect is `r sum(prof_trash$wei
 ### What was the total number of cigarette butts collected by Gwynnda in June of 2022?
 The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$numbers[gwy_trash$type_of_trash == "cigarette_butts"])`
 
+# Problem 3
+## Part 1: create a single, well-organized dataset with all the information 
+First of all, read all these tables.
+```{r}
+bakers = read_csv("./data of hw2/gbb_datasets/bakers.csv") |>
+  janitor::clean_names()
+bakes = read_csv("./data of hw2/gbb_datasets/bakes.csv")|>
+  janitor::clean_names()
+result = read_csv("./data of hw2/gbb_datasets/results.csv", skip = 2, na = "NA")|>
+  janitor::clean_names() |>
+  mutate(
+    result = case_match(
+      result,
+      "IN" ~ "stayed in",
+      "OUT" ~ "Eliminated",
+      "STAR BAKER" ~ "Star Baker", 
+      "WINNER" ~ "Series Winner",
+      "Runner-up" ~ "Series Runner up",
+      "WD" ~ "withdrew")
+    )
+viewers = read_csv("./data of hw2/gbb_datasets/viewers.csv")|>
+  janitor::clean_names()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
