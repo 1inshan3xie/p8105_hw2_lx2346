@@ -68,7 +68,7 @@ serve_a = filter(nyc_tran_2, route_name == "A")
 serve_a_ada = filter(serve_a, ada == TRUE)
 ```
 
-So there are `r nrow(distinct(serve_a, station_name))` diatinct stations serves A. And among those stations serves A, there are `r nrow(distinct(serve_a_ada, station_name))` stations are ADA compliant.
+So there are `r nrow(distinct(serve_a, station_name))` distinct stations serves A. And among those stations serves A, there are `r nrow(distinct(serve_a_ada, station_name))` stations are ADA compliant.
 
 # Problem 2
 ## import and clean mr_trash data
@@ -80,7 +80,7 @@ mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", r
   mutate(sports_balls = as.integer(sports_balls)) |>
   pivot_longer(
     plastic_bottles: sports_balls,
-    names_to = "type_of _trash",
+    names_to = "type_of_trash",
     values_to = "numbers"
   ) |>
   mutate(type = "Mr.")
@@ -93,7 +93,7 @@ prof_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx",
   janitor::clean_names() |>
   pivot_longer(
     plastic_bottles: wrappers,
-    names_to = "type_of _trash",
+    names_to = "type_of_trash",
     values_to = "numbers"
   ) |>
   mutate(type = "Professor") |>
@@ -103,7 +103,7 @@ gwy_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", 
   janitor::clean_names() |>
   pivot_longer(
     plastic_bottles: wrappers,
-    names_to = "type_of _trash",
+    names_to = "type_of_trash",
     values_to = "numbers"
   ) |>
   mutate(type = "Gwynnda") |>
@@ -115,4 +115,13 @@ gwy_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", 
 trash_df = bind_rows( prof_trash, gwy_trash, mr_trash)
 ```
 
+## Write a paragraph about these data
+**The trash_df has `r nrow(trash_df)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(trash_df)`✖`r ncol(trash_df)` table.**\
+The variables in the dataset are `r names(trash_df)`, in which, there are mainly three types of trash wheels in the data frame, which are Mr. Trash Wheel, Professor Trash Wheel and Gwynnda Trash Wheel. The variable numbers shows the exact number of trash that the dumpster collect. Home_powered means Each ton of trash equates to on average 500 kilowatts of electricity.  An average household will use 30 kilowatts per day. \
+
+### what was the total weight of trash collected by Professor Trash Wheel?
+The total weight of trash Professor Trash Wheel collect is `r sum(prof_trash$weight_tons)` tons.
+
+### What was the total number of cigarette butts collected by Gwynnda in June of 2022?
+The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$numbers[gwy_trash$type_of_trash == "cigarette_butts"])`
 
