@@ -149,6 +149,47 @@ viewers = read_csv("./data of hw2/gbb_datasets/viewers.csv")|>
   janitor::clean_names()
 ```
 
+## Wrangle through the datasets
+
+```{r}
+bakers = rename(bakers, baker_full_name = baker_name) |>
+  mutate(baker_first_name = sapply(strsplit(baker_full_name, " "), function(x) x[1])) |>
+  select(baker_full_name, baker_first_name, everything())
+bakes = rename(bakes, baker_first_name = baker)
+result = rename(result, baker_first_name = baker)
+```
+see if the data in the bakes and result set are correct
+```{r}
+anti_join(bakes, bakers, by = "baker_first_name")
+```
+For "Jo" in bakes, I find a strange ""across the Jo, so I tried to change it into Jo and do anti join again:
+```{r}
+bakes = bakes |>
+  mutate(baker_first_name = recode(baker_first_name, "\"Jo\"" = "Jo"))
+```
+Let's see what is in result but not in bakers
+```{r}
+anti_join(result, bakers, by = "baker_first_name")
+```
+It is shown that the person who has a first name Joanne is not in the list of bakers but in the list of result. The person Joanne is shown in series 2, episode 1~8, it is just the same situation with Jo as it listed in the bakes set. If I use it reversely...
+```{r}
+anti_join(bakers, result, by = "baker_first_name")
+```
+So I strongly suspect that the person Joanne in result set is the Jo in bakers and bakes datasets.
+```{r}
+result = result |>
+  mutate(baker_first_name = recode(baker_first_name, "Joanne" = "Jo"))
+```
+So far, all these datasets are clean and correct. Let's merge them together. 
+## Combine the 3 datasets
+```{r}
+baker_df_all = left_join(bakers,result, by = c("baker_first_name","series"))  |>
+  left_join(bakes, by = c("baker_first_name","series","episode" )) |>
+  select(baker_full_name, baker_first_name, baker_age, baker_occupation, hometown, series,episode, signature_bake, show_stopper, everything())
+baker_df_all
+```
+So, in this data set, I've conclude all the bakers information (full names, first names, age, occupation and hometown) and the series and episode they take part in the show. I've also shown the signature bake and show stopper of their bake in each episode. The technical and the result of them either.
+
 
 
 
