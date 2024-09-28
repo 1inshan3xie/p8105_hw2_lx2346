@@ -34,7 +34,7 @@ nyc_tran = read_csv("./data of hw2/NYC_Transit_Subway_Entrance_And_Exit_Data.csv
 ## Describe the NYC Transit Data
 **The NYC transit data set has `r nrow(nyc_tran)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(nyc_tran)`✖️`r ncol(nyc_tran)` table.**\
 **The variables in the dataset are `r names(nyc_tran)`.**\
-To sum up, the dataset lists each of the entry/exit in each subway station. It lists whether or not it is a entry, whether or not it has a vending,  whether or not it has a ADA compliance and the entrance type of each entry/exit. It also lists the information about the station, like which line and route it belongs to and the station's locaton(longitude and latitude).
+To sum up, the dataset lists each of the entry/exit in each subway station. It lists whether or not it is a entry, whether or not it has a vending,  whether or not it has a ADA compliance and the entrance type of each entry/exit. It also lists the information about the station, like which line and route it belongs to and the station's locaton (longitude and latitude).
 
 ## Answer the following questions using these data:
 **1. How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox)**\
@@ -123,7 +123,7 @@ The variables in the dataset are `r names(trash_df)`, in which, there are mainly
 The total weight of trash Professor Trash Wheel collect is `r sum(prof_trash$weight_tons)` tons.
 
 ### What was the total number of cigarette butts collected by Gwynnda in June of 2022?
-The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$numbers[gwy_trash$type_of_trash == "cigarette_butts"])`
+The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$numbers[gwy_trash$type_of_trash == "cigarette_butts" & gwy_trash$month == "June" & gwy_trash$year == "2022"])`
 
 # Problem 3
 ## Part 1: create a single, well-organized dataset with all the information 
@@ -145,8 +145,6 @@ result = read_csv("./data of hw2/gbb_datasets/results.csv", skip = 2, na = "NA")
       "Runner-up" ~ "Series Runner up",
       "WD" ~ "withdrew")
     )
-viewers = read_csv("./data of hw2/gbb_datasets/viewers.csv")|>
-  janitor::clean_names()
 ```
 
 ## Wrangle through the datasets
@@ -200,6 +198,26 @@ star_winner
 ```
 As you can see from this table, **Most of the people who end up winning series winners have taken more than one star baker in the first few episodes of this season** (which is quite predictable), such as Nancy in Season 5, Nadiya in Season 6, Candice in Season 7, Sophie in Season 8, and Rahul in Season 9, but there was a surprise, in season 10, **Steph** had a total of **4 star bakers**, which made him the strongest candidate for series winner, but in episode 10 the series winner was David.
 
+## Now for the viewers!
+```{r}
+viewers = read_csv("./data of hw2/gbb_datasets/viewers.csv", na = "NA")|>
+  janitor::clean_names() |>
+  pivot_longer(
+    series_1:series_10,
+    names_to = "series",
+    values_to = "viewership",
+    names_prefix = "series_"
+  ) |>
+  select(series, episode, viewership) |>
+  mutate(series = as.numeric(series)) |>
+  arrange(series, episode)
+head(viewers, n = 10)
+```
+
+### Next, calculate the average viewership in Season 1 and Season 5.
+Notice: There are some NA values in the dataset. 
+The average viewership in Season 1 is `r mean(viewers$viewership[viewers$series == 1], na.rm = TRUE)`.\
+The average viewership in Season 5 is `r mean(viewers$viewership[viewers$series == 5], na.rm = TRUE)`.
 
 
 
