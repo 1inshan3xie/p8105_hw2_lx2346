@@ -190,6 +190,19 @@ baker_df_all
 ```
 So, in this data set, I've conclude all the bakers information (full names, first names, age, occupation and hometown) and the series and episode they take part in the show. I've also shown the signature bake and show stopper of their bake in each episode. The technical and the result of them either.
 
+## Create a reader-friendly table showing the star baker or winner of each episode in Seasons 5 through 10
+```{r}
+star_winner = baker_df_all |>
+  filter(series >= 5 & series <= 10) |>
+  filter(result %in% c("Star Baker","Series Winner" )) |>
+  arrange(series, episode)
+star_winner
+```
+As you can see from this table, **Most of the people who end up winning series winners have taken more than one star baker in the first few episodes of this season** (which is quite predictable), such as Nancy in Season 5, Nadiya in Season 6, Candice in Season 7, Sophie in Season 8, and Rahul in Season 9, but there was a surprise, in season 10, **Steph** had a total of **4 star bakers**, which made him the strongest candidate for series winner, but in episode 10 the series winner was David.
+
+
+
+
 
 
 
