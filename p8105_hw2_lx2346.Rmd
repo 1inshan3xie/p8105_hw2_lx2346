@@ -1,6 +1,6 @@
 ---
 title: "p8105_hw2_lx2346"
-author: "linshan"
+author: "linshan xie"
 date: "2024-09-25"
 output: github_document
 ---
@@ -64,7 +64,7 @@ serve_a = filter(nyc_tran_2, route_name == "A")
 serve_a_ada = filter(serve_a, ada == TRUE)
 ```
 
-So there are `r nrow(distinct(serve_a, station_name))` distinct stations serves A. And among those stations serves A, there are `r nrow(distinct(serve_a_ada, station_name))` stations are ADA compliant.
+So there are `r nrow(distinct(serve_a, station_name,line))` distinct stations serves A. And among those stations serves A, there are `r nrow(distinct(serve_a_ada, station_name, line))` stations are ADA compliant.
 
 # Problem 2
 ## import and clean mr_trash data
@@ -97,14 +97,14 @@ trash_df = bind_rows( prof_trash, gwy_trash, mr_trash)
 ```
 
 ## Write a paragraph about these data
-**The trash_df has `r nrow(trash_df)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(trash_df)`✖`r ncol(trash_df)` table.**\
+**The trash_df has `r nrow(trash_df)` rows and `r ncol(trash_df)` columns. It is a `r nrow(trash_df)`✖`r ncol(trash_df)` table.**\
 There are `r nrow(trash_df)` observations. The variables in the dataset are `r names(trash_df)`, in which, there are mainly three types of trash wheels in the data frame, which are Mr. Trash Wheel, Professor Trash Wheel and Gwynnda Trash Wheel. The variable numbers shows the exact number of trash that the dumpster collect. Home_powered means Each ton of trash equates to on average 500 kilowatts of electricity.  An average household will use 30 kilowatts per day. \
 
 ### What was the total weight of trash collected by Professor Trash Wheel?
 The total weight of trash Professor Trash Wheel collect is `r sum(prof_trash$weight_tons)` tons.
 
 ### What was the total number of cigarette butts collected by Gwynnda in June of 2022?
-The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$numbers[gwy_trash$type_of_trash == "cigarette_butts" & gwy_trash$month == "June" & gwy_trash$year == "2022"])`
+The total number of cigarette butts collected by Gwynnda in June of 2022 is `r sum(gwy_trash$cigarette_butts[gwy_trash$month == "June" & gwy_trash$year == "2022"])`
 
 # Problem 3
 ## Part 1: create a single, well-organized dataset with all the information 
@@ -166,7 +166,7 @@ So far, all these datasets are clean and correct. Let's merge them together.
 baker_df_all = left_join(bakers,result, by = c("baker_first_name","series"))  |>
   left_join(bakes, by = c("baker_first_name","series","episode" )) |>
   select(baker_full_name, baker_first_name, baker_age, baker_occupation, hometown, series,episode, signature_bake, show_stopper, everything())
-baker_df_all
+write_csv(baker_df_all, "./data of hw2/baker_df_all.csv")
 ```
 So, in this data set, I've conclude all the bakers information (full names, first names, age, occupation and hometown) and the series and episode they take part in the show. I've also shown the signature bake and show stopper of their bake in each episode. The technical and the result of them either.
 
