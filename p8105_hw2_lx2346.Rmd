@@ -14,16 +14,15 @@ library(tidyverse)
 ```{r}
 nyc_tran = read_csv("./data of hw2/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",na = "") |>
   janitor::clean_names() |>
-  mutate(across(starts_with("route"), as.character)) |>
-  pivot_longer(
-    route1:route11,
-    names_to = NULL, 
-    values_to = "routes_served") |>
-  filter(routes_served != "") |>
-  select(line, station_name, station_latitude,station_longitude, routes_served, entry, vending, entrance_type,ada) |>
+  select(line, station_name, station_latitude,station_longitude, route1:route11, entry, vending, entrance_type,ada) |>
   mutate( entry = case_match( entry , "YES"  ~ TRUE, "NO" ~ FALSE)) |>
   mutate( vending = case_match(vending , "YES"  ~ TRUE, "NO" ~ FALSE))
 ```
+## Describe the NYC Transit Data
+**The NYC transit data set has `r nrow(nyc_tran)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(nyc_tran)`✖️`r ncol(nyc_tran)` table.**\
+**The variables in the dataset are `r names(nyc_tran)`.**\
+To sum up, the dataset lists each of the entry/exit in each subway station. It lists whether or not it is a entry, whether or not it has a vending,  whether or not it has a ADA compliance and the entrance type of each entry/exit. It also lists the information about the station, like which line and route it belongs to and the station's locaton (longitude and latitude).
+
 ## Describe what cleaning work I've done above.
 1. Clean the names of the dataset\
 2. Combine the routes from route1 to route11 into 1 variable with column name routes_served\
@@ -31,26 +30,24 @@ nyc_tran = read_csv("./data of hw2/NYC_Transit_Subway_Entrance_And_Exit_Data.csv
 4. Select the route, station name, station latitude, station longitude, service route, entrance, vending machine, entrance_type, motor variable required by the problem\
 5. Convert the entry and vending variable from character (YES vs NO) to a logical variable\
 
-## Describe the NYC Transit Data
-**The NYC transit data set has `r nrow(nyc_tran)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(nyc_tran)`✖️`r ncol(nyc_tran)` table.**\
-**The variables in the dataset are `r names(nyc_tran)`.**\
-To sum up, the dataset lists each of the entry/exit in each subway station. It lists whether or not it is a entry, whether or not it has a vending,  whether or not it has a ADA compliance and the entrance type of each entry/exit. It also lists the information about the station, like which line and route it belongs to and the station's locaton (longitude and latitude).
+## Are these data tidy?
+This data is not tidy because it uses eleven lines of variables(route1 : route 11) to display information about the route.
 
 ## Answer the following questions using these data:
 **1. How many distinct stations are there? Note that stations are identified both by name and by line (e.g. 125th St 8th Avenue; 125st Broadway; 125st Lenox)**\
 \
-There are `r nrow(distinct(nyc_tran,station_name))` distinct stations.
+There are `r nrow(distinct(nyc_tran, line, station_name))` distinct stations.
 
 **2. How many stations are ADA compliant?**\
 ```{r}
 ada_true = filter(nyc_tran, ada == TRUE)
-nrow(distinct(ada_true, station_name))
+nrow(distinct(ada_true, station_name, line))
 ```
 So there are `r nrow(distinct(ada_true, station_name))` distinct stations which are ADA compliant.\
 
 **3. What proportion of station entrances / exits without vending allow entrance?**\
 \
-`r nrow(filter(nyc_tran, vending == FALSE))/nrow(nyc_tran)`
+`r nrow(filter(nyc_tran, vending == FALSE & entry == TRUE))/nrow(filter(nyc_tran, vending == FALSE))`
 
 ### Reformat data making route number and route name distinct variables
 ```{r}
@@ -61,8 +58,7 @@ nyc_tran_2 = read_csv("./data of hw2/NYC_Transit_Subway_Entrance_And_Exit_Data.c
     route1:route11,
     names_to = "route_number", 
     values_to = "route_name",
-    names_prefix = "route") |>
-  filter(route_name != "")
+    names_prefix = "route")
 #find the distinct station serves A route & ada. 
 serve_a = filter(nyc_tran_2, route_name == "A")
 serve_a_ada = filter(serve_a, ada == TRUE)
@@ -78,11 +74,6 @@ mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", r
   janitor::clean_names() |>
   mutate(sports_balls = round(sports_balls)) |>
   mutate(sports_balls = as.integer(sports_balls)) |>
-  pivot_longer(
-    plastic_bottles: sports_balls,
-    names_to = "type_of_trash",
-    values_to = "numbers"
-  ) |>
   mutate(type = "Mr.")
 ```
 
@@ -91,21 +82,11 @@ mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", r
 # import professor trash wheel
 prof_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
   janitor::clean_names() |>
-  pivot_longer(
-    plastic_bottles: wrappers,
-    names_to = "type_of_trash",
-    values_to = "numbers"
-  ) |>
   mutate(type = "Professor") |>
   mutate(year = as.character(year))
 # import Gwynnda Trash Wheel
 gwy_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |>
   janitor::clean_names() |>
-  pivot_longer(
-    plastic_bottles: wrappers,
-    names_to = "type_of_trash",
-    values_to = "numbers"
-  ) |>
   mutate(type = "Gwynnda") |>
   mutate(year = as.character(year))
 ```
@@ -117,9 +98,9 @@ trash_df = bind_rows( prof_trash, gwy_trash, mr_trash)
 
 ## Write a paragraph about these data
 **The trash_df has `r nrow(trash_df)` rows and `r ncol(nyc_tran)` columns. It is a `r nrow(trash_df)`✖`r ncol(trash_df)` table.**\
-The variables in the dataset are `r names(trash_df)`, in which, there are mainly three types of trash wheels in the data frame, which are Mr. Trash Wheel, Professor Trash Wheel and Gwynnda Trash Wheel. The variable numbers shows the exact number of trash that the dumpster collect. Home_powered means Each ton of trash equates to on average 500 kilowatts of electricity.  An average household will use 30 kilowatts per day. \
+There are `r nrow(trash_df)` observations. The variables in the dataset are `r names(trash_df)`, in which, there are mainly three types of trash wheels in the data frame, which are Mr. Trash Wheel, Professor Trash Wheel and Gwynnda Trash Wheel. The variable numbers shows the exact number of trash that the dumpster collect. Home_powered means Each ton of trash equates to on average 500 kilowatts of electricity.  An average household will use 30 kilowatts per day. \
 
-### what was the total weight of trash collected by Professor Trash Wheel?
+### What was the total weight of trash collected by Professor Trash Wheel?
 The total weight of trash Professor Trash Wheel collect is `r sum(prof_trash$weight_tons)` tons.
 
 ### What was the total number of cigarette butts collected by Gwynnda in June of 2022?
@@ -158,7 +139,7 @@ result = rename(result, baker_first_name = baker)
 ```
 see if the data in the bakes and result set are correct
 ```{r}
-anti_join(bakes, bakers, by = "baker_first_name")
+anti_join(bakes, bakers, by = c("baker_first_name","series"))
 ```
 For "Jo" in bakes, I find a strange ""across the Jo, so I tried to change it into Jo and do anti join again:
 ```{r}
@@ -167,11 +148,11 @@ bakes = bakes |>
 ```
 Let's see what is in result but not in bakers
 ```{r}
-anti_join(result, bakers, by = "baker_first_name")
+anti_join(result, bakers, by = c("baker_first_name","series"))
 ```
 It is shown that the person who has a first name Joanne is not in the list of bakers but in the list of result. The person Joanne is shown in series 2, episode 1~8, it is just the same situation with Jo as it listed in the bakes set. If I use it reversely...
 ```{r}
-anti_join(bakers, result, by = "baker_first_name")
+anti_join(bakers, result, by = c("baker_first_name","series"))
 ```
 So I strongly suspect that the person Joanne in result set is the Jo in bakers and bakes datasets.
 ```{r}
@@ -179,6 +160,7 @@ result = result |>
   mutate(baker_first_name = recode(baker_first_name, "Joanne" = "Jo"))
 ```
 So far, all these datasets are clean and correct. Let's merge them together. 
+
 ## Combine the 3 datasets
 ```{r}
 baker_df_all = left_join(bakers,result, by = c("baker_first_name","series"))  |>
@@ -218,18 +200,5 @@ head(viewers, n = 10)
 Notice: There are some NA values in the dataset. 
 The average viewership in Season 1 is `r mean(viewers$viewership[viewers$series == 1], na.rm = TRUE)`.\
 The average viewership in Season 5 is `r mean(viewers$viewership[viewers$series == 5], na.rm = TRUE)`.
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
