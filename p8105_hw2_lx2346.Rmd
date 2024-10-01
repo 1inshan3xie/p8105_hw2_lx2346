@@ -68,9 +68,9 @@ So there are `r nrow(distinct(serve_a, station_name,line))` distinct stations se
 
 # Problem 2
 ## import and clean mr_trash data
-```{r}
+```{r} 
 library(readxl)
-mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", range = "A2:N586") |>
+mr_trash = read_excel("./data of hw2/202409 Trash Wheel Collection Data.xlsx", range = "A2:N653") |>
   janitor::clean_names() |>
   mutate(sports_balls = round(sports_balls)) |>
   mutate(sports_balls = as.integer(sports_balls)) |>
@@ -80,12 +80,12 @@ mr_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", r
 ## use the same way import Professor Trash Wheel and Gwynnda data
 ```{r}
 # import professor trash wheel
-prof_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
+prof_trash = read_excel("./data of hw2/202409 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M120") |>
   janitor::clean_names() |>
   mutate(type = "Professor") |>
   mutate(year = as.character(year))
 # import Gwynnda Trash Wheel
-gwy_trash = read_excel("./data of hw2/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |>
+gwy_trash = read_excel("./data of hw2/202409 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L265") |>
   janitor::clean_names() |>
   mutate(type = "Gwynnda") |>
   mutate(year = as.character(year))
